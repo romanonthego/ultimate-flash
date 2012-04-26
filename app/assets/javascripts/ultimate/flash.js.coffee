@@ -47,15 +47,25 @@ class Ultimate.Plugins.Flash extends Ultimate.Proto.Widget
        defaultErrorText: 'Error'
        defaultThrownError: 'server connection error'
        formFieldsError: 'Form filled with errors'
+       # headline for flash messages
+       successHeadline: 'Congratulation!'
+       errorHeadline: 'Oops...'
+       warningHeadline: 'Ouch...'
+       infoHeadline: 'And dont forget:'
      'ru':
        defaultErrorText: 'Ошибка'
        defaultThrownError: 'ошибка соединения с сервером'
        formFieldsError: 'Форма заполнена с ошибками'
+       # headline for flash messages
+       successHeadline: 'Поздравляем!'
+       errorHeadline: 'Упс...'
+       warningHeadline: 'Ой...'
+       infoHeadline: 'Обатите внимание:'
     options:
       locale: 'en'
       translations: {}
       slideTime: 200
-      showTime: 3600
+      showTime: 10000
       showTimePerChar: 30
       showAjaxErrors: true                  # catch global jQuery.ajaxErrors(), try detect message and show it
       showAjaxSuccesses: true               # catch global jQuery.ajaxSuccessess(), try detect message and show it
@@ -116,7 +126,15 @@ class Ultimate.Plugins.Flash extends Ultimate.Proto.Widget
 
   show: (type, text) ->
     return false  if $.isEmptyString text
-    jFlash = $ "<div class=\"flash #{type}\" style=\"display: none;\">#{@_prepareText text}</div>"
+    jFlash = $ "<div class=\"flash #{type}\" style=\"display: none;\">
+      <div class=\"icon\">
+      </div>
+      <div class=\"message\">
+        <span class=\"headline\">hello!</span>
+        <span class=\"text\">#{@_prepareText text}</span>
+      </div>
+      <div class=\"close\"></div>
+      </div>"
     jFlash.appendTo(@jContainer).slideDown @settings.slideTime
     @_setTimeout jFlash
     jFlash
@@ -124,6 +142,13 @@ class Ultimate.Plugins.Flash extends Ultimate.Proto.Widget
   notice: (text) -> @show 'notice', text
 
   alert:  (text) -> @show 'alert',  text
+
+
+  # aliases
+  success: (text) -> @show 'success', text
+  error: (text) -> @show 'error', text
+  warning: (text) -> @show 'warning', text
+  info: (text) -> @show 'info', text
 
   auto: (obj) ->
     if $.isArray obj
