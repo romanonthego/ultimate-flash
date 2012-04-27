@@ -1,4 +1,8 @@
 %section.l-page__flashes.from_app
   - flash.each do |key, text|
     .flash{:class => key}
-      = text
+      .icon
+      .message
+        %p.headline Hello from view!
+        %p.text= text
+      .close

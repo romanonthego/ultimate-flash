@@ -50,7 +50,7 @@ class Ultimate.Plugins.Flash extends Ultimate.Proto.Widget
        # headline for flash messages
        successHeadline: 'Congratulation!'
        errorHeadline: 'Oops...'
-       warningHeadline: 'Ouch...'
+       warningHeadline: 'Hmmm?..'
        infoHeadline: 'And dont forget:'
      'ru':
        defaultErrorText: 'Ошибка'
@@ -59,13 +59,13 @@ class Ultimate.Plugins.Flash extends Ultimate.Proto.Widget
        # headline for flash messages
        successHeadline: 'Поздравляем!'
        errorHeadline: 'Упс...'
-       warningHeadline: 'Ой...'
-       infoHeadline: 'Обатите внимание:'
+       warningHeadline: 'Хм?..'
+       infoHeadline: 'Хозяйке на заметку:'
     options:
       locale: 'en'
       translations: {}
       slideTime: 200
-      showTime: 10000
+      showTime: 30000
       showTimePerChar: 30
       showAjaxErrors: true                  # catch global jQuery.ajaxErrors(), try detect message and show it
       showAjaxSuccesses: true               # catch global jQuery.ajaxSuccessess(), try detect message and show it
@@ -79,7 +79,8 @@ class Ultimate.Plugins.Flash extends Ultimate.Proto.Widget
       regExpLastWordWithDot: /([\wа-яёА-ЯЁ]{3,})\.$/
 
   @events:
-    'click   .flash:not(:animated)' : 'closeFlashClick'
+    # 'click   .flash:not(:animated)' : 'closeFlashClick'
+    'click   .flash:not(:animated) .close' : 'closeButtonClick'
 
   constructor: (@jContainer, options = {}) ->
     super
@@ -99,6 +100,12 @@ class Ultimate.Plugins.Flash extends Ultimate.Proto.Widget
   closeFlashClick: (event) =>
     if @settings.hideOnClick
       @_hide $ event.currentTarget
+      false
+
+  closeButtonClick: (e) =>
+    # since we will always close on click - refactor it.
+    if @settings.hideOnClick
+      @_hide $(e.currentTarget).closest('.flash')
       false
 
   jFlashes: (filterSelector) ->
@@ -125,13 +132,26 @@ class Ultimate.Plugins.Flash extends Ultimate.Proto.Widget
         , timeout
 
   show: (type, text) ->
+    console.log('show inwoked')
     return false  if $.isEmptyString text
+
+    switch type
+      when 'success' then headline = @settings.translations.successHeadline
+      when 'notice' then headline = @settings.translations.successHeadline
+
+      when 'error' then headline = @settings.translations.errorHeadline
+      when 'alert' then headline = @settings.translations.errorHeadline
+
+      when 'warning' then headline = @settings.translations.warningHeadline
+      when 'info' then headline = @settings.translations.infoHeadline
+
+
     jFlash = $ "<div class=\"flash #{type}\" style=\"display: none;\">
       <div class=\"icon\">
       </div>
       <div class=\"message\">
-        <span class=\"headline\">hello!</span>
-        <span class=\"text\">#{@_prepareText text}</span>
+        <p class=\"headline\">#{headline}</p>
+        <p class=\"text\">#{@_prepareText text}</p>
       </div>
       <div class=\"close\"></div>
       </div>"
@@ -146,6 +166,7 @@ class Ultimate.Plugins.Flash extends Ultimate.Proto.Widget
 
   # aliases
   success: (text) -> @show 'success', text
+  # success: (text) -> @notice text
   error: (text) -> @show 'error', text
   warning: (text) -> @show 'warning', text
   info: (text) -> @show 'info', text
